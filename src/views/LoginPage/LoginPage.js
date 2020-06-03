@@ -32,26 +32,14 @@ export default function LoginPage (props) {
   }, 700)
   const classes = useStyles()
 
-  const [errors, setErrors] = useState({})
-
   const { onChange, onSubmit, values } = useForm(loginUserCallback, {
     email: '',
     password: ''
   })
 
   const [login, { loading }] = useMutation(UserLogin, {
-    update (
-      _,
-      {
-        data: { UserLogin: userData }
-      }
-    ) {
-      props.history.push('/')
-    },
-    onError (err) {
-      setErrors(err.graphQLErrors[0].extensions.exception.errors)
-    },
-    variables: values
+    variables: values,
+    onCompleted: () => { props.history.push('/profile') }
   })
 
   function loginUserCallback () {
@@ -119,15 +107,6 @@ export default function LoginPage (props) {
           </Card>
         </GridItem>
       </GridContainer>
-      {Object.keys(errors).length > 0 && (
-        <div className='ui error message'>
-          <ul className='list'>
-            {Object.values(errors).map((value) => (
-              <li key={value}>{value}</li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   )
 }

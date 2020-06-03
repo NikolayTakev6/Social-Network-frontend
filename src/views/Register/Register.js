@@ -29,30 +29,21 @@ export default function Register (props) {
     setCardAnimation('')
   }, 700)
   const classes = useStyles()
-  const [errors, setErrors] = useState({})
 
   const { onChange, onSubmit, values } = useForm(registerUser, {
-    firstName: '',
-    lastName: '',
+    username: '',
+    // firstName: '',
+    // lastName: '',
     email: '',
     password: ''
   })
-
-  const [createUser, { loading }] = useMutation(UserRegister, {
-    update (
-      _
-      // {
-      //   // data: { UserRegister: userData }
-      // }
-    ) {
-      props.history.push('/')
+  const [createUser, {onCompleted}] = useMutation(UserRegister, {
+    variables: {
+      input: values
     },
-    onError (err) {
-      setErrors(err.graphQLErrors[0].extensions.exception.errors)
-    },
-    variables: values
+    onCompleted: () => { props.history.push('/') }
   })
-
+  console.log('Register mutation', createUser)
   function registerUser () { createUser() }
 
   return (
@@ -72,8 +63,8 @@ export default function Register (props) {
                     fullWidth: true
                   }}
                   inputProps={{
-                    name: 'firstName',
-                    value: values.firstName,
+                    name: 'username',
+                    value: values.username,
                     onChange: onChange,
                     type: 'text',
                     endAdornment: (
@@ -83,7 +74,7 @@ export default function Register (props) {
                     )
                   }}
                 />
-                <CustomInput
+                {/* <CustomInput
                   labelText='Last Name...'
                   id='last'
                   name='lastName'
@@ -102,7 +93,7 @@ export default function Register (props) {
                       </InputAdornment>
                     )
                   }}
-                />
+                /> */}
                 <CustomInput
                   labelText='Email...'
                   id='email'
@@ -152,15 +143,6 @@ export default function Register (props) {
           </Card>
         </GridItem>
       </GridContainer>
-      {Object.keys(errors).length > 0 && (
-        <div className='ui error message'>
-          <ul className='list'>
-            {Object.values(errors).map((value) => (
-              <li key={value}>{value}</li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   )
 }
