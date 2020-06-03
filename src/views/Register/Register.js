@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import gql from 'graphql-tag'
 import { useMutation } from '@apollo/react-hooks'
 // @material-ui/core components
 import { makeStyles } from '@material-ui/core/styles'
@@ -16,9 +15,12 @@ import Card from 'components/Card/Card.js'
 import CardBody from 'components/Card/CardBody.js'
 import CardHeader from 'components/Card/CardHeader.js'
 import CustomInput from 'components/CustomInput/CustomInput.js'
+/** MUTATION */
+import { UserRegister } from '../../apollo/'
 
 import styles from 'assets/jss/material-kit-react/views/loginPage.js'
-
+/** UTILS */
+import { useForm } from '../../utils/hooks'
 const useStyles = makeStyles(styles)
 
 export default function Register (props) {
@@ -27,36 +29,39 @@ export default function Register (props) {
     setCardAnimation('')
   }, 700)
   const classes = useStyles()
+  const [errors, setErrors] = useState({})
 
-  const [values, setValues] = useState({
+  const { onChange, onSubmit, values } = useForm(registerUser, {
     firstName: '',
     lastName: '',
     email: '',
     password: ''
   })
 
-  const onChange = (event) => {
-    console.log(event.target.value)
-    console.log(event.target.name)
-    setValues({ ...values, [event.target.name]: event.target.value })
-  }
-
-  const [addUser, { loading }] = useMutation(REGISTER_USER, {
-    update (proxy, result) {
-      console.log(result)
-    }
+  const [createUser, { loading }] = useMutation(UserRegister, {
+    update (
+      _
+      // {
+      //   // data: { UserRegister: userData }
+      // }
+    ) {
+      props.history.push('/')
+    },
+    onError (err) {
+      setErrors(err.graphQLErrors[0].extensions.exception.errors)
+    },
+    variables: values
   })
-  const onSubmit = (event) => {
-    event.preventDefault()
-    addUser({ variables: values })
-  }
+
+  function registerUser () { createUser() }
+
   return (
     <div className={classes.container}>
       <GridContainer justify='center'>
         <GridItem xs={16} sm={10} md={5}>
           <Card className={classes[cardAnimaton]}>
             <form onSubmit={onSubmit} className={classes.form}>
-              <CardHeader color='primary' className={classes.cardHeader}>
+              <CardHeader color='info' className={classes.cardHeader}>
                 <h4>Register</h4>
               </CardHeader>
               <CardBody>
@@ -102,7 +107,6 @@ export default function Register (props) {
                   labelText='Email...'
                   id='email'
                   name='email'
-                  onChange={onChange}
                   formControlProps={{
                     fullWidth: true
                   }}
@@ -143,29 +147,20 @@ export default function Register (props) {
                 />
               </CardBody>
               <div className='inline' />
-              <Button type='submit' color='primary' block>Register</Button>
+              <Button type='submit' color='info' block>Register</Button>
             </form>
           </Card>
         </GridItem>
       </GridContainer>
+      {Object.keys(errors).length > 0 && (
+        <div className='ui error message'>
+          <ul className='list'>
+            {Object.values(errors).map((value) => (
+              <li key={value}>{value}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }
-
-const REGISTER_USER = gql`
-    mutation addUser(
-        $firstName: String!,
-        $lastName: String!,
-        $email: String!,
-        $password: String!
-    ) {
-        addUser(
-            firstName: $firstName
-            lastName: $lastName
-            email: $email
-            password: $password
-        ) {
-          firstName
-        }
-    }
-`

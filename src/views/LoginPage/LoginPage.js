@@ -1,9 +1,10 @@
-import React from 'react'
-// @material-ui/core components
+import React, { useState } from 'react'
+import { useMutation } from '@apollo/react-hooks'
+// core components
 import { makeStyles } from '@material-ui/core/styles'
 import InputAdornment from '@material-ui/core/InputAdornment'
 import Icon from '@material-ui/core/Icon'
-// @material-ui/icons
+// icons
 import Email from '@material-ui/icons/Email'
 import People from '@material-ui/icons/People'
 // core components
@@ -14,6 +15,11 @@ import Card from 'components/Card/Card.js'
 import CardBody from 'components/Card/CardBody.js'
 import CardHeader from 'components/Card/CardHeader.js'
 import CustomInput from 'components/CustomInput/CustomInput.js'
+
+/** UTILS */
+import { useForm } from '../../utils/hooks'
+/** MUTATION */
+import { UserLogin } from '../../apollo'
 
 import styles from 'assets/jss/material-kit-react/views/loginPage.js'
 
@@ -26,13 +32,39 @@ export default function LoginPage (props) {
   }, 700)
   const classes = useStyles()
 
+  const [errors, setErrors] = useState({})
+
+  const { onChange, onSubmit, values } = useForm(loginUserCallback, {
+    email: '',
+    password: ''
+  })
+
+  const [login, { loading }] = useMutation(UserLogin, {
+    update (
+      _,
+      {
+        data: { UserLogin: userData }
+      }
+    ) {
+      props.history.push('/')
+    },
+    onError (err) {
+      setErrors(err.graphQLErrors[0].extensions.exception.errors)
+    },
+    variables: values
+  })
+
+  function loginUserCallback () {
+    login()
+  }
+
   return (
     <div className={classes.container}>
       <GridContainer justify='center'>
-        <GridItem xs={16} sm={10} md={5}>
+        <GridItem xs={12} sm={10} md={5}>
           <Card className={classes[cardAnimaton]}>
-            <form className={classes.form}>
-              <CardHeader color='primary' className={classes.cardHeader}>
+            <form onSubmit={onSubmit} className={classes.form}>
+              <CardHeader color='info' className={classes.cardHeader}>
                 <h4>Login</h4>
                 <div className={classes.socialLine} />
               </CardHeader>
@@ -40,11 +72,15 @@ export default function LoginPage (props) {
                 <CustomInput
                   labelText='Email...'
                   id='email'
+                  name='email'
                   formControlProps={{
                     fullWidth: true
                   }}
                   inputProps={{
                     type: 'email',
+                    name: 'email',
+                    onChange: onChange,
+                    value: values.email,
                     endAdornment: (
                       <InputAdornment position='end'>
                         <Email className={classes.inputIconsColor} />
@@ -55,11 +91,15 @@ export default function LoginPage (props) {
                 <CustomInput
                   labelText='Password'
                   id='pass'
+                  name='password'
                   formControlProps={{
                     fullWidth: true
                   }}
                   inputProps={{
                     type: 'password',
+                    name: 'password',
+                    onChange: onChange,
+                    value: values.password,
                     endAdornment: (
                       <InputAdornment position='end'>
                         <Icon className={classes.inputIconsColor}>
@@ -71,15 +111,23 @@ export default function LoginPage (props) {
                   }}
                 />
               </CardBody>
-              <div class='inline'>
-                <Button link color='primary'>Register</Button>
-                <Button link color='primary'>Forgotten password</Button>
+              <div className='inline'>
+                <Button onClick={() => { props.history.push('/register') }} link color='info'>Register</Button>
               </div>
-              <Button type='submit' color='primary' block>Login</Button>
+              <Button type='submit' color='info' block>Login</Button>
             </form>
           </Card>
         </GridItem>
       </GridContainer>
+      {Object.keys(errors).length > 0 && (
+        <div className='ui error message'>
+          <ul className='list'>
+            {Object.values(errors).map((value) => (
+              <li key={value}>{value}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }

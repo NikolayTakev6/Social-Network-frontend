@@ -14,6 +14,7 @@ import HeaderLinks from './components/Header/HeaderLinks'
 
 import Register from './views/Register/Register'
 import LoginPage from './views/LoginPage/LoginPage'
+import ProfilePage from './views/ProfilePage/ProfilePage'
 import { toast } from 'react-toastify'
 
 function App () {
@@ -23,12 +24,11 @@ function App () {
     draggable: false
   })
   return (
-
     <Router history={hist}>
       <Header
         color='info'
         rightLinks={<HeaderLinks />}
-        brand='Song App'
+        brand='Social Network'
       />
       <GridContainer
         spacing={3}
@@ -40,6 +40,7 @@ function App () {
           <Switch>
             <Route path='/register' exact component={Register} />
             <Route path='/' exact component={LoginPage} />
+            <Route path='/profile' exact component={ProfilePage} />
           </Switch>
         </GridItem>
       </GridContainer>

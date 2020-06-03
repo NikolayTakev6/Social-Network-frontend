@@ -48,6 +48,17 @@ export default function HeaderLinks(props) {
             </Link>
         </Button>
       </ListItem>
+      <ListItem className={classes.listItem}>
+        <Button
+          color="transparent"
+          target="_blank"
+          className={classes.navLink}
+        >
+           <Link to="/profile" className={classes.dropdownLink}>
+              Profile
+            </Link>
+        </Button>
+      </ListItem>
     </List>
   );
 }
