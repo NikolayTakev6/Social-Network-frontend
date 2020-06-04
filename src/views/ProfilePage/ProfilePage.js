@@ -45,17 +45,6 @@ export default function ProfilePage (props) {
   const navImageClasses = classNames(classes.imgRounded, classes.imgGallery)
   return (
     <div>
-      <Header
-        color='transparent'
-        brand='Social Network'
-        rightLinks={<HeaderLinks />}
-        fixed
-        changeColorOnScroll={{
-          height: 200,
-          color: 'white'
-        }}
-        {...rest}
-      />
       <Parallax small filter image={require('assets/img/profile-bg.jpg')} />
       <div className={classNames(classes.main, classes.mainRaised)}>
         <div>

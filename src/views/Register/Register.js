@@ -21,6 +21,7 @@ import { UserRegister } from '../../apollo/'
 import styles from 'assets/jss/material-kit-react/views/loginPage.js'
 /** UTILS */
 import { useForm } from '../../utils/hooks'
+import { storeToken } from '../../utils'
 const useStyles = makeStyles(styles)
 
 export default function Register (props) {
@@ -37,14 +38,23 @@ export default function Register (props) {
     email: '',
     password: ''
   })
-  const [createUser, {onCompleted}] = useMutation(UserRegister, {
+  const [createUser, { loading }] = useMutation(UserRegister, {
     variables: {
       input: values
     },
     onCompleted: () => { props.history.push('/') }
   })
-  console.log('Register mutation', createUser)
-  function registerUser () { createUser() }
+
+  async function registerUser () {
+    try {
+      const res = await createUser()
+      console.log(res)
+      storeToken(res.data.User.token)
+      props.history.push('/')
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   return (
     <div className={classes.container}>

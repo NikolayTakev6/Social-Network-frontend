@@ -9,56 +9,33 @@ import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import Tooltip from "@material-ui/core/Tooltip";
 
 // @material-ui/icons
-import { Apps, CloudDownload } from "@material-ui/icons";
-
-// core components
-import CustomDropdown from "components/CustomDropdown/CustomDropdown.js";
 import Button from "components/CustomButtons/Button.js";
 
 import styles from "assets/jss/material-kit-react/components/headerLinksStyle.js";
 
 const useStyles = makeStyles(styles);
 
-export default function HeaderLinks(props) {
+export default function HeaderLinks({links}) {
   const classes = useStyles();
   return (
     <List className={classes.list}> 
-      <ListItem className={classes.listItem}>
+    {
+      links.map(link => (
+        <ListItem className={classes.listItem}>
         <Button
           color="transparent"
           target="_blank"
           className={classes.navLink}
         >
-           <Link to="/register" className={classes.dropdownLink}>
-              Register
+           <Link to={link.to} className={classes.dropdownLink}>
+              {link.name}
             </Link>
         </Button>
       </ListItem>
-      <ListItem className={classes.listItem}>
-        <Button
-          color="transparent"
-          target="_blank"
-          className={classes.navLink}
-        >
-           <Link to="/" className={classes.dropdownLink}>
-              Login
-            </Link>
-        </Button>
-      </ListItem>
-      <ListItem className={classes.listItem}>
-        <Button
-          color="transparent"
-          target="_blank"
-          className={classes.navLink}
-        >
-           <Link to="/profile" className={classes.dropdownLink}>
-              Profile
-            </Link>
-        </Button>
-      </ListItem>
+        ))
+    }
     </List>
   );
 }
